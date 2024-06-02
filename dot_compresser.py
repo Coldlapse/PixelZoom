@@ -38,6 +38,16 @@ def create_restored_image(content, bbox, original_image_shape, alpha_channel):
     
     return restored_image
 
+def compare_images(image1, image2):
+    # 두 이미지를 비교
+    difference = cv2.absdiff(image1, image2)
+    _, diff = cv2.threshold(difference, 30, 255, cv2.THRESH_BINARY)
+    
+    # 차이가 있는 픽셀 수를 계산
+    non_zero_count = np.count_nonzero(diff)
+    
+    return non_zero_count == 0
+
 def save_image(image, path):
     cv2.imwrite(path, image)
 
@@ -62,6 +72,47 @@ restored_image = create_restored_image(content, bbox, image.shape, alpha_channel
 
 height, width = restored_image.shape[:2]
 
+min_val = min(height, width)
+    
+# 공약수를 저장할 리스트 초기화
+common_divisors = []
+
+# 1부터 두 정수 중 작은 값까지 반복하여 공약수 찾기
+for i in range(1, min_val + 1):
+    if height % i == 0 and width % i == 0:
+        common_divisors.append(i)
+
+
+minchunksize = -1
+for element in reversed(common_divisors):
+    print("testing for Chunk Size " + str(element))
+    new_height = int(height / element)
+    new_width = int(width / element)
+    minchunk_image = cv2.resize(restored_image, (new_width, new_height), interpolation=cv2.INTER_NEAREST)
+    restored_minchunk_image = cv2.resize(minchunk_image, (width, height), interpolation=cv2.INTER_NEAREST)
+    cv2.imwrite(f"Test/{element}restored.png", restored_image)
+    cv2.imwrite(f"Test/{element}minchunk.png", minchunk_image)
+    cv2.imwrite(f"Test/{element}restoredminchunk.png", restored_minchunk_image)
+    if compare_images(restored_image, restored_minchunk_image) == True:
+        print("Image의 Chunk Size = " + str(element))
+        minchunksize = element
+        minchunk_height = new_height
+        minchunk_width = new_width
+        break
+
+if minchunksize == -1:
+    print("이미지의 MinChunk 탐색 실패! 이미지 축소 불가능!")
+else:
+    resize_scale = 0.2 # 축소할 배율
+    resize_chunksize = round(minchunksize * resize_scale)
+    if resize_chunksize == 0:
+        resize_chunksize = 1
+    final_resize_height = minchunk_height * resize_chunksize
+    final_resize_width = minchunk_width * resize_chunksize
+    final_resized_image = cv2.resize(minchunk_image, (final_resize_width, final_resize_height), interpolation=cv2.INTER_NEAREST)
+    print(f"{resize_scale}배로 축소하라고 입력받은 결과, 가장 근접한 축소 배율은 {resize_chunksize / minchunksize}임으로 계산되었습니다.")
+    print(f"원본 {width}*{height} 이미지를 {final_resize_width}*{final_resize_height} 이미지로 축소하였습니다.")
+    cv2.imwrite("Test/Final_Resized_Image.png", final_resized_image)
 
 
 # 복원된 이미지 저장
