@@ -21,7 +21,8 @@ def main():
             sys.exit(1)
         subprocess.run(["python", "normal_resizer.py", image_path, scale, quality])
     elif mode == 'pixel':
-        subprocess.run(["python", "dot_resizer.py", image_path, scale])
+        subprocess.run(["python", "dot_resizer_v2.py", image_path, scale])
+        # subprocess.run(["python", "dot_resizer.py", image_path, scale])
     else:
         print("유효하지 않은 모드입니다. 'normal'혹은 'pixel'모드를 사용해주세요. ")
         sys.exit(1)
