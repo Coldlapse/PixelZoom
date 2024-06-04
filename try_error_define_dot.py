@@ -281,3 +281,107 @@ def combined_classify_image(image_path):
     print(f"Pixelated Result: {pixelated_result}")
     print(f"Is Pixel Art: {'Yes' if final_decision else 'No'}")
     print("")
+
+
+#######
+#실제로 채택할 도트 구분 알고리즘, 이미지의 엣지를 표현했을 때, 발생하는 노이즈의 정도로 픽셀 여부 파악
+
+def detect_aliased_edges(image_path):
+    # 이미지 읽기
+    image = cv2.imread(image_path, cv2.IMREAD_COLOR)
+    if image is None:
+        print(f"Error: Could not load image {image_path}")
+        return None, None, None
+
+    # 그레이스케일로 변환
+    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # Sobel 연산자를 사용하여 x, y 방향의 기울기 계산
+    grad_x = cv2.Sobel(gray_image, cv2.CV_64F, 1, 0, ksize=3)
+    grad_y = cv2.Sobel(gray_image, cv2.CV_64F, 0, 1, ksize=3)
+
+    # 기울기의 크기 계산
+    magnitude = np.sqrt(grad_x**2 + grad_y**2)
+    
+    # 기울기의 방향 계산
+    angle = np.arctan2(grad_y, grad_x) * 180 / np.pi
+
+    # 계단 현상 감지를 위해 기울기와 방향의 불연속성을 분석
+    aliased_edges = (magnitude > 100) & ((angle % 45) < 10)  # 기울기 크기와 방향 기준 설정
+
+    # 계단 현상이 감지된 픽셀의 비율 계산
+    aliased_ratio = np.sum(aliased_edges) / magnitude.size
+
+    # 전체 엣지 픽셀 수와 계단 현상 픽셀 수
+    total_edges = np.sum(magnitude > 100)
+    aliased_edges_count = np.sum(aliased_edges)
+
+    return aliased_ratio, aliased_edges, total_edges, aliased_edges_count
+
+# 결과 시각화 및 픽셀 이미지 판단
+def visualize_and_classify_images(image_paths):
+    for image_path in image_paths:
+        # 계단 현상 감지
+        aliased_ratio, aliased_edges, total_edges, aliased_edges_count = detect_aliased_edges(image_path)
+        if aliased_ratio is None or aliased_edges is None:
+            continue
+
+        # 이미지 읽기
+        image = cv2.imread(image_path, cv2.IMREAD_COLOR)
+        if image is None:
+            print(f"Error: Could not load image {image_path}")
+            continue
+
+        # 그레이스케일로 변환
+        gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+        # 결과 시각화
+        aliased_image = np.zeros_like(gray_image)
+        aliased_image[aliased_edges] = 255
+
+        plt.figure(figsize=(10, 10))
+        plt.subplot(1, 2, 1)
+        plt.title('Original Image')
+        plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+        plt.subplot(1, 2, 2)
+        plt.title('Aliased Edges')
+        plt.imshow(aliased_image, cmap='gray')
+        plt.show()
+
+        # 픽셀 이미지 여부 판단
+        noise_level = (total_edges - aliased_edges_count) / total_edges if total_edges > 0 else 0
+        is_pixel_art = noise_level < 0.5
+
+        print(f"Image: {image_path}")
+        print(f"Aliased Ratio: {aliased_ratio:.4f}")
+        print(f"Noise Level: {noise_level:.4f}")
+        print("Is Pixel Art:", "Yes" if is_pixel_art else "No")
+        print("")
+
+# 이미지 경로 목록
+image_paths = [
+    'image/dot/dot1.png',
+    'image/dot/dot2.png',
+    'image/dot/dot3.png',
+    'image/dot/dot4.png',
+    'image/dot/dot5.png',
+    'image/dot/dot6.png',
+    'image/dot/dot7.png',
+    'image/dot/dot8.png',
+    'image/dot/dot9.png',
+    'image/dot/dot10.png',
+
+    'image/normal/normal1.png',
+    'image/normal/normal2.png',
+    'image/normal/normal3.png',
+    'image/normal/normal4.png',
+    'image/normal/normal5.png',
+    'image/normal/normal6.png',
+    'image/normal/normal7.png',
+    'image/normal/normal8.png',
+    'image/normal/normal9.png',
+    'image/normal/normal10.png',
+]
+
+# 이미지 분류 및 시각화
+visualize_and_classify_images(image_paths)
