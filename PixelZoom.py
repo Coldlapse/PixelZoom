@@ -71,8 +71,9 @@ def main():
     scale = sys.argv[2]
 
     if mode == 0:
+        print("이미지가 일반 이미지로 감지되었습니다. 보간법을 이용한 이미지 리사이즈를 진행합니다.")
         if len(sys.argv) < 4:
-            print("속도 중시 / 품질 중시 모드가 선택되지 않아 기본값인 품질 중시 모드를 선택합니다.")
+            print("속도 중시(-speed) / 품질 중시(-quality) 모드가 선택되지 않아 기본값인 품질 중시 모드를 선택합니다.")
             quality = '-quality'
         else:
             quality = sys.argv[3].lower()
@@ -81,6 +82,8 @@ def main():
                 sys.exit(1)
         subprocess.run(["python", "normal_resizer.py", image_path, scale, quality])
     elif mode == 1:
+        print("이미지가 도트 이미지로 감지되었습니다.")
+        print("이미지의 내용물을 유지하면서 이미지 사이즈를 변경하기 위해, 이미지 배경이 제거됩니다.")
         subprocess.run(["python", "dot_resizer_v3.py", image_path, scale])
     else:
         print("이미지를 불러오는 것에 실패했습니다. 이미지를 확인해주세요.")
