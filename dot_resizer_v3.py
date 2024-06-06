@@ -68,8 +68,12 @@ def resize_image(image, scale):
     # 내용물 추출
     content, bbox = extract_content(image_no_bg, mask)
 
-    # 알파 채널 추출
-    alpha_channel = image[:, :, 3]
+    # 알파 채널 추출 (4채널 이미지인 경우에만)
+    if image.shape[2] == 4:
+        alpha_channel = image[:, :, 3]
+    else:
+        # 알파 채널이 없는 경우, 알파 채널을 흰색(완전히 불투명)으로 설정
+        alpha_channel = np.ones(image.shape[:2], dtype=np.uint8) * 255
 
     # 내용물을 포함하는 새 이미지 생성 (투명 배경 유지)
     restored_image = create_restored_image(content, bbox, image.shape, alpha_channel)

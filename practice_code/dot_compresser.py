@@ -59,8 +59,8 @@ def save_image(image, path):
     cv2.imwrite(path, image)
 
 # 이미지 경로 설정
-image_path = 'res_compresser/dot4.png'
-output_path = 'res_compresser/output_imagee.png'
+image_path = 'res_compresser/dot6.png'
+output_path = 'res_compresser/output_image6.png'
 
 # 이미지 로드
 image = load_image(image_path)
