@@ -73,12 +73,12 @@ def main():
     if mode == 0:
         if len(sys.argv) < 4:
             print("속도 중시 / 품질 중시 모드가 선택되지 않아 기본값인 품질 중시 모드를 선택합니다.")
-            quality = '-bicubic'
+            quality = '-quality'
         else:
             quality = sys.argv[3].lower()
-        if quality not in ['-speed', '-quality']:
-            print("확대 모드는 반드시 '-speed' 또는 '-quality'이어야 합니다.")
-            sys.exit(1)
+            if quality not in ['-speed', '-quality']:
+                print("확대 모드는 반드시 '-speed' 또는 '-quality'이어야 합니다.")
+                sys.exit(1)
         subprocess.run(["python", "normal_resizer.py", image_path, scale, quality])
     elif mode == 1:
         subprocess.run(["python", "dot_resizer_v3.py", image_path, scale])

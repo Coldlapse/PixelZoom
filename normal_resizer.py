@@ -28,7 +28,7 @@ def main(image_path, scale, quality='-quality'):
 
     :param image_path: 이미지 파일 경로
     :param scale: 확대/축소 비율
-    :param quality: 보간법의 품질 ('-quality'(품질) 또는 '-bilinear'(속도))
+    :param quality: 보간법의 품질 ('-quality'(품질) 또는 '-speed'(속도))
     """
     # 사용자가 선택한 보간법에 따라 OpenCV의 보간법 상수를 설정합니다.
     interpolation = cv2.INTER_CUBIC if quality == '-quality' else cv2.INTER_LINEAR
