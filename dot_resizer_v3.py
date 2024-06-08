@@ -77,7 +77,8 @@ def resize_image(image, scale):
 
     # 내용물을 포함하는 새 이미지 생성 (투명 배경 유지)
     restored_image = create_restored_image(content, bbox, image.shape, alpha_channel)
-
+    
+    oheight, owidth = image.shape[:2]    
     height, width = restored_image.shape[:2]
 
     min_val = min(height, width)
@@ -109,12 +110,12 @@ def resize_image(image, scale):
             break
 
     if minchunksize == -1:
-        #print("이미지의 MinChunk 탐색에 실패하여, 가장 근접한 정수배로 이미지를 변경합니다. 이미지 축소는 불가능합니다.")
+        print("이미지의 MinChunk 탐색에 실패하여, 가장 근접한 정수배로 이미지를 변경합니다. 이미지 축소는 불가능합니다.")
         if scale < 1:
             print("MinChunk가 탐색되지 않은 이미지에 대한 이미지 축소는 불가능합니다.")
             return None
         nearest_scale = int(np.round(scale))
-        new_size = (width * nearest_scale, height * nearest_scale)
+        new_size = (owidth * nearest_scale, oheight * nearest_scale)
         resized_image = cv2.resize(image, new_size, interpolation=cv2.INTER_NEAREST)
         return resized_image
         
