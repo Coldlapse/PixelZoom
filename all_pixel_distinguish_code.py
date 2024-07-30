@@ -37,7 +37,7 @@ def classify_edge_density(image_path):
 ###
 
 
-# 2. 경계 및 계단 현상 분석
+# 2. 경계 및 계단 현상 길이 분석
 def detect_jagged_edges(image_path):
     image = cv2.imread(image_path, cv2.IMREAD_COLOR)
     if image is None:
@@ -100,7 +100,7 @@ def count_unique_colors(image_path):
 ###
 
 
-# 4. 엣지와 노이즈로 픽셀 여부 판단
+# 4. 엣지와 노이즈로 픽셀 여부 판단(현재 채택 중)
 def detect_aliased_edges(image_path):
     image = cv2.imread(image_path, cv2.IMREAD_COLOR)
     if image is None:
