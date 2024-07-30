@@ -128,7 +128,7 @@ def detect_aliased_edges(image_path):
 ###
 
 
-# 결과 시각화 및 픽셀 이미지 판단
+# 판별 알고리즘에 따른 결과 출력
 def visualize_and_classify_images(image_paths, classify_function):
     process = psutil.Process(os.getpid())
     total_memory_used = 0
@@ -142,8 +142,6 @@ def visualize_and_classify_images(image_paths, classify_function):
         if classify_function == classify_edge_density:
             is_pixel_art = classify_function(image_path)
         elif classify_function == classify_jagged_edges:
-            is_pixel_art = classify_function(image_path)
-        elif classify_function == classify_lines:
             is_pixel_art = classify_function(image_path)
         elif classify_function == detect_aliased_edges:
             aliased_ratio, aliased_edges, total_edges, aliased_edges_count = (
@@ -218,12 +216,12 @@ def main():
         "PixelZoom/image/normal/normal10.png",
     ]
 
+    # 위에서 언급한 방식들로 이미지 판별
     visualize_and_classify_images(image_paths, classify_edge_density)
     # visualize_and_classify_images(image_paths, classify_jagged_edges)
-    # visualize_and_classify_images(image_paths, classify_lines)
     # visualize_and_classify_images(image_paths, detect_aliased_edges)
 
-    # 새로운 함수 사용 예제
+    # 각 이미지의 고유 색상 출력
     # for image_path in image_paths:
     #    num_colors = count_unique_colors(image_path)
     #    print(f"Image: {image_path} has {num_colors} unique colors")
