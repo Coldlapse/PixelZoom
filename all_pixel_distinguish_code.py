@@ -79,45 +79,22 @@ def classify_jagged_edges(image_path):
 ###
 
 
-# 3. 수평 및 수직 라인의 개수로 분석
-def count_lines(img):
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    gray = cv2.bilateralFilter(gray, 5, 50, 50)
-    edges = cv2.Canny(gray, 50, 150)
-    lines = cv2.HoughLines(edges, rho=1, theta=pi / 180, threshold=50)
-
-    if lines is None:
-        return 0, 0
-
-    angles = lines.squeeze()[:, 1] * 180 / pi
-    horizontal_vertical_lines = np.sum(
-        np.logical_or.reduce(
-            (
-                np.abs(angles) < 1,
-                np.abs(angles - 90) < 1,
-                np.abs(angles - 180) < 1,
-                np.abs(angles - 270) < 1,
-            )
-        )
-    )
-
-    total_lines = len(angles)
-    return horizontal_vertical_lines, total_lines
-
-
-def classify_lines(image_path):
-    img = cv2.imread(image_path)
-    if img is None:
+# 3. 이미지에서 모든 색상의 종류 개수를 파악
+def count_unique_colors(image_path):
+    image = cv2.imread(image_path, cv2.IMREAD_COLOR)
+    if image is None:
         print(f"Error: Could not load image {image_path}")
         return None
 
-    hv_lines, total_lines = count_lines(img)
-    hv_ratio = hv_lines / total_lines if total_lines > 0 else 0
+    b, g, r = cv2.split(image)
+    out_in_32U_2D = (
+        np.int32(b) << 16 | np.int32(g) << 8 | np.int32(r)
+    )  # 비트 시프트를 통해 각 채널을 결합
+    out_in_32U_1D = out_in_32U_2D.reshape(-1)  # 1D로 변환
+    unique_colors = np.unique(out_in_32U_1D)  # 고유한 색상 값 찾기
+    num_unique_colors = len(unique_colors)  # 고유한 색상 개수 계산
 
-    is_pixel_art = (
-        hv_ratio > 0.3
-    )  # 임계값 0.5는 수평 및 수직 라인이 전체 라인의 50%를 초과할 때 픽셀 아트로 판단
-    return is_pixel_art
+    return num_unique_colors
 
 
 ###
@@ -206,7 +183,6 @@ def visualize_and_classify_images(image_paths, classify_function):
 
         print(f"Image: {image_path}")
         print("Is Pixel Art:", "Yes" if is_pixel_art else "No")
-        print(f"Memory used: {memory_used / (1024 * 1024):.2f} MB")
         print("")
 
     end_time = time.time()
@@ -215,24 +191,6 @@ def visualize_and_classify_images(image_paths, classify_function):
     print(f"Total Time taken: {total_time:.2f} seconds")
     print(f"Total Pixel Art Images: {pixel_art_count}")
     print(f"Total Non-Pixel Art Images: {non_pixel_art_count}")
-
-
-# 새로운 함수: 이미지에서 모든 색상의 종류 개수를 파악
-def count_unique_colors(image_path):
-    image = cv2.imread(image_path, cv2.IMREAD_COLOR)
-    if image is None:
-        print(f"Error: Could not load image {image_path}")
-        return None
-
-    b, g, r = cv2.split(image)
-    out_in_32U_2D = (
-        np.int32(b) << 16 | np.int32(g) << 8 | np.int32(r)
-    )  # 비트 시프트를 통해 각 채널을 결합
-    out_in_32U_1D = out_in_32U_2D.reshape(-1)  # 1D로 변환
-    unique_colors = np.unique(out_in_32U_1D)  # 고유한 색상 값 찾기
-    num_unique_colors = len(unique_colors)  # 고유한 색상 개수 계산
-
-    return num_unique_colors
 
 
 # 메인 함수
@@ -260,15 +218,15 @@ def main():
         "PixelZoom/image/normal/normal10.png",
     ]
 
-    # visualize_and_classify_images(image_paths, classify_edge_density)
+    visualize_and_classify_images(image_paths, classify_edge_density)
     # visualize_and_classify_images(image_paths, classify_jagged_edges)
     # visualize_and_classify_images(image_paths, classify_lines)
     # visualize_and_classify_images(image_paths, detect_aliased_edges)
 
     # 새로운 함수 사용 예제
-    for image_path in image_paths:
-        num_colors = count_unique_colors(image_path)
-        print(f"Image: {image_path} has {num_colors} unique colors")
+    # for image_path in image_paths:
+    #    num_colors = count_unique_colors(image_path)
+    #    print(f"Image: {image_path} has {num_colors} unique colors")
 
 
 if __name__ == "__main__":
