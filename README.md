@@ -2,6 +2,8 @@
 
 # 07/31
 
+- all_pixel_distinguish_code 추가
+
 ## 픽셀 이미지 판별 알고리즘 정립
 
 # 사용 알고리즘
