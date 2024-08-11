@@ -165,7 +165,6 @@ class AutoCrawler:
         return data
 
     def download_images(self, keyword, links, site_name, max_count=0):
-        self.make_dir('{}/{}'.format(self.download_path, keyword.replace('"', '')))
         total = len(links)
         success_count = 0
 
@@ -192,10 +191,8 @@ class AutoCrawler:
                     ext = self.get_extension_from_link(link)
                     is_base64 = False
 
-                no_ext_path = '{}/{}/{}_{}'.format(self.download_path.replace('"', ''), keyword, site_name,
-                                                   str(index).zfill(4))
-                #path = no_ext_path + '.' + ext
-                path = self.download_path
+                path = '{}/{}_{}.{}'.format(self.download_path, site_name, str(index).zfill(4), ext)
+                print(path)
                 self.save_object_to_file(response, path, is_base64=is_base64)
 
                 success_count += 1
@@ -208,16 +205,18 @@ class AutoCrawler:
                     success_count -= 1
                 else:
                     if ext != ext2:
-                        path2 = no_ext_path + '.' + ext2
+                        path2 = '{}.{}'.format(path, ext2)
                         os.rename(path, path2)
                         print('Renamed extension {} -> {}'.format(ext, ext2))
 
             except KeyboardInterrupt:
                 break
-                        
+
             except Exception as e:
                 print('Download failed - ', e)
                 continue
+
+
 
     def download_from_site(self, keyword, site_code):
         site_name = Sites.get_text(site_code)
