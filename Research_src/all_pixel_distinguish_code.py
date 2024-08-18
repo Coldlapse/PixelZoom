@@ -7,7 +7,7 @@ import glob
 from openpyxl import load_workbook
 
 # 엑셀 파일 로드
-file_path = "PixelZoom/Research_src/Result.xlsx"  # 작성할 엑셀 파일 경로
+file_path = "Result.xlsx"  # 작성할 엑셀 파일 경로
 workbook = load_workbook(filename=file_path)
 sheet = workbook.active  # 첫 번째 시트를 사용합니다.
 
@@ -25,18 +25,18 @@ def record_results_to_excel(
     row = image_index + 2  # 엑셀의 첫 번째 행(헤더)을 건너뛰기 위해 +2
 
     # 픽셀 아트 여부 기록 (H 열)
-    sheet[f"H{row}"] = "p" if is_pixel_art else "n"
+    sheet[f"I{row}"] = "p" if is_pixel_art else "n"
 
     # 분석 시간 기록 (I 열)
-    sheet[f"I{row}"] = analysis_time
+    sheet[f"J{row}"] = analysis_time
     total_time_sum += analysis_time  # 총 시간 합계에 추가
 
     # 메모리 사용량 기록 (J 열)
-    sheet[f"J{row}"] = memory_used
+    sheet[f"K{row}"] = memory_used
     total_memory_sum += memory_used  # 총 메모리 사용량 합계에 추가
 
     # CPU 점유율 기록 (L 열)
-    sheet[f"L{row}"] = cpu_usage
+    #sheet[f"L{row}"] = cpu_usage
 
     # 엑셀 파일 저장
     workbook.save(filename=file_path)
@@ -269,8 +269,7 @@ def get_image_paths_from_folders(folder_paths, extensions=["*.png", "*.jpg", "*.
 # 메인 함수
 def main():
     folder_paths = [  # 분석할 이미지가 있는 폴더의 경로를 입력
-        "PixelZoom/PixelZoom_src/image/dot",
-        "PixelZoom/PixelZoom_src/image/normal",
+        "AutoCrawler-master/download",
     ]
 
     image_paths = get_image_paths_from_folders(folder_paths)
@@ -279,13 +278,13 @@ def main():
     # visualize_and_classify_images(image_paths, classify_edge_density)
 
     # (1) 경계 및 계단 현상 길이 분석에 따른 판별
-    visualize_and_classify_images(image_paths, classify_jagged_edges)
+    #visualize_and_classify_images(image_paths, classify_jagged_edges)
 
     # (2) 히스토그램 임계값을 이용한 픽셀 아트 판별
-    # visualize_and_classify_images(image_paths, is_pixelated)
+    #visualize_and_classify_images(image_paths, is_pixelated)
 
     # (3) 엣지와 노이즈 분석에 따른 판별
-    # visualize_and_classify_images(image_paths, classify_aliased_edges)
+    visualize_and_classify_images(image_paths, classify_aliased_edges)
 
 
 if __name__ == "__main__":
