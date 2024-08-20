@@ -7,7 +7,7 @@ import glob
 from openpyxl import load_workbook
 
 # 엑셀 파일 로드
-file_path = "Result.xlsx"  # 작성할 엑셀 파일 경로
+file_path = "PixelZoom/Research_src/temp_0820.xlsx"  # 작성할 엑셀 파일 경로
 workbook = load_workbook(filename=file_path)
 sheet = workbook.active  # 첫 번째 시트를 사용합니다.
 
@@ -36,7 +36,7 @@ def record_results_to_excel(
     total_memory_sum += memory_used  # 총 메모리 사용량 합계에 추가
 
     # CPU 점유율 기록 (L 열)
-    #sheet[f"L{row}"] = cpu_usage
+    # sheet[f"L{row}"] = cpu_usage
 
     # 엑셀 파일 저장
     workbook.save(filename=file_path)
@@ -235,7 +235,10 @@ def is_pixelated(image_path):
     # Fourier Transform
     f_transform = np.fft.fft2(gray)
     f_shift = np.fft.fftshift(f_transform)
-    magnitude_spectrum = 20 * np.log(np.abs(f_shift))
+
+    # 작은 값을 더하여 로그 계산 오류 방지
+    epsilon = 1e-10
+    magnitude_spectrum = 20 * np.log(np.abs(f_shift) + epsilon)
 
     # Analyze the magnitude spectrum for high-frequency components
     high_freq_count = np.sum(
@@ -244,9 +247,9 @@ def is_pixelated(image_path):
     )
 
     # Heuristic thresholds
-    edge_density_threshold = 0.1  # Arbitrary value, adjust based on empirical results
-    hist_spike_threshold = 50  # Arbitrary value, adjust based on empirical results
-    high_freq_threshold = 500  # Arbitrary value, adjust based on empirical results
+    edge_density_threshold = 0.1  # 임의의 기준값 설정
+    hist_spike_threshold = 50  # 임의의 기준값 설정
+    high_freq_threshold = 500  # 임의의 기준값 설정
 
     is_pixelated = (
         (edge_density > edge_density_threshold)
@@ -258,7 +261,16 @@ def is_pixelated(image_path):
 
 
 # 특정 폴더 내 모든 이미지 경로를 가져오는 함수
-def get_image_paths_from_folders(folder_paths, extensions=["*.png", "*.jpg", "*.jpeg"]):
+def get_image_paths_from_folders(
+    folder_paths,
+    extensions=[
+        "*.png",
+        "*.jpg",
+        "*.jpeg",
+        "*.webp",
+        "*.jfif",
+    ],
+):
     image_paths = []
     for folder_path in folder_paths:
         for ext in extensions:
@@ -269,7 +281,7 @@ def get_image_paths_from_folders(folder_paths, extensions=["*.png", "*.jpg", "*.
 # 메인 함수
 def main():
     folder_paths = [  # 분석할 이미지가 있는 폴더의 경로를 입력
-        "AutoCrawler-master/download",
+        "PixelZoom/test_image_0820",
     ]
 
     image_paths = get_image_paths_from_folders(folder_paths)
@@ -278,10 +290,10 @@ def main():
     # visualize_and_classify_images(image_paths, classify_edge_density)
 
     # (1) 경계 및 계단 현상 길이 분석에 따른 판별
-    #visualize_and_classify_images(image_paths, classify_jagged_edges)
+    # visualize_and_classify_images(image_paths, classify_jagged_edges)
 
     # (2) 히스토그램 임계값을 이용한 픽셀 아트 판별
-    #visualize_and_classify_images(image_paths, is_pixelated)
+    # visualize_and_classify_images(image_paths, is_pixelated)
 
     # (3) 엣지와 노이즈 분석에 따른 판별
     visualize_and_classify_images(image_paths, classify_aliased_edges)
