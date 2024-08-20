@@ -150,10 +150,13 @@ class AutoCrawler:
     @staticmethod
     def save_object_to_file(object, file_path, is_base64=False):
         try:
+            print(file_path)
             with open('{}'.format(file_path), 'wb') as file:
                 if is_base64:
+                    print(object)
                     file.write(object)
                 else:
+                    print(object)
                     shutil.copyfileobj(object.raw, file)
         except Exception as e:
             print('Save failed - {}'.format(e))
@@ -252,7 +255,7 @@ class AutoCrawler:
 
             print('Downloading images from collected links... {} from {}'.format(keyword, site_name))
             self.download_images(keyword, links, site_name, max_count=self.limit)
-            Path('{}/{}/{}_done'.format(self.download_path, keyword.replace('"', ''), site_name)).touch()
+            #Path('{}/{}/{}_done'.format(self.download_path, keyword.replace('"', ''), site_name)).touch()
 
             print('Done {} : {}'.format(site_name, keyword))
 

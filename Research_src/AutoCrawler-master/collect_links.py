@@ -255,7 +255,7 @@ class CollectLinks:
         print('Scraping links')
 
         # Click the first image
-        self.wait_and_click('//div[@class="tile_item _fe_image_tab_content_tile"]//img[@class="_fe_image_tab_content_thumbnail_image"]')
+        self.wait_and_click('//*[@id="main_pack"]/section[2]/div[1]/div/div/div[1]/div[1]/div/div/div/img')
         time.sleep(1)
 
         links = []
@@ -266,12 +266,13 @@ class CollectLinks:
 
         while True:
             try:
-                xpath = '//img[@class="_fe_image_viewer_image_fallback_target"]'
+                xpath = '//*[@id="main_pack"]/section[2]/div[1]/div/div/div[1]'
                 imgs = self.browser.find_elements(By.XPATH, xpath)
+                print(imgs[0])
 
                 for img in imgs:
                     self.highlight(img)
-                    src = img.get_attribute('src')
+                    src = img.get_attribute('link')
 
                     if src not in links and src is not None:
                         links.append(src)

@@ -1,1 +1,1 @@
-"pixel" | "image” 
+"pixel art" | "image”
