@@ -7,7 +7,7 @@
 - 이 프로시저는 후술할 세 모듈을 통해 구동되는 이미지 확대-축소기로, 구체적으로는 **입력받은 이미지가 픽셀 아트인지 아닌지 구분하고, 그 형태에 알맞는 리사이징을 실행** 하는 것을 목적으로 합니다.
 
 ## 실행 방법
-<pre><code> python PixelZoom.py <image_path> <scale> [-speed | -quality] </code></pre>
+<pre><code> python PixelZoom.py \<image_path\> \<scale\> [-speed | -quality] </code></pre>
 
 # 사용 알고리즘
 
